@@ -1,5 +1,17 @@
 count = 64620
 root_dir = '.\\data\\data_cut\\'
+labels = list()
+fp = open('data\\label\\index', 'r')
+for line in fp.readlines():
+	if line[0] == 's':
+		labels.append(True)
+	else:
+		labels.append(False)
+
+def is_spam(n):
+	if n >= count:
+		return None
+	return labels[n]
 
 def numberToStr3(n):
 	return '%03d' % n
