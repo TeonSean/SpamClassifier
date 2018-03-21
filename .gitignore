@@ -1,5 +1,6 @@
 data/
 *.dat
+*.mod
 
 #pycharm ide
 .idea/

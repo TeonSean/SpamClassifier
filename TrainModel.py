@@ -1,4 +1,5 @@
-import FileReader as fr
+import filereader as fr
+import math
 import pickle
 
 class Model:
@@ -20,6 +21,8 @@ class Model:
 				n_ham += 1
 		self.p_ham = (n_ham + 1) / (total + 2)
 		self.p_spam = (n_spam + 1) / (total + 2)
+		self.p_ham = math.log(self.p_ham)
+		self.p_spam = math.log(self.p_spam)
 		return n_ham, n_spam
 
 
@@ -42,17 +45,17 @@ class Model:
 		for key in self.p_w_ham:
 			self.p_w_ham[key] += 1
 			self.p_w_ham[key] /= (n_ham + 2)
+			self.p_w_ham[key] = math.log(self.p_w_ham[key])
 		for key in self.p_w_spam:
 			self.p_w_spam[key] += 1
 			self.p_w_spam[key] /= (n_spam + 2)
+			self.p_w_spam[key] = math.log(self.p_w_spam[key])
 
 
 	def train(self, trainingSet):
 		n_ham, n_spam = self.computePriorProb(trainingSet)
 		self.initDicts()
 		self.computePostProb(trainingSet, n_ham, n_spam)
-		print(self.p_w_spam)
-		print(self.p_w_ham)
 
 
 	def __init__(self, id, trainingSet):

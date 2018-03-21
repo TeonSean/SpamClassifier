@@ -1,4 +1,4 @@
-import FileReader as fr
+import filereader as fr
 import pickle
 
 def collectWords(n):
