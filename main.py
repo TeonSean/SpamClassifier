@@ -2,6 +2,7 @@ import FileReader as fr
 import random
 import math
 import pickle
+from TrainModel import Model
 
 trainingSet = list()
 testSet = list()
@@ -14,4 +15,5 @@ def divideDataSet(pct):
 	trainingSet = numbers[:n]
 	testSet = numbers[n:]
 
-divideDataSet(5)
+divideDataSet(25)
+test = Model('test', trainingSet)

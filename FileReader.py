@@ -37,5 +37,5 @@ def getWords(n):
 		return None
 	fp = open(getFilenameByNumber(n), encoding='utf-8')
 	words = filterCharacter(fp.read()).split(' ')
-	words = [word for word in words if not word == '']
+	words = list(set([word for word in words if not word == '']))
 	return words
