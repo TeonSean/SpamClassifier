@@ -1,6 +1,7 @@
 import filereader as fr
 import pickle
 
+#获取所有词语
 def collectWords(n):
 	words = set()
 	for i in range(n):

@@ -10,23 +10,26 @@ class Model:
 	p_p_spam = dict()
 	p_ham = float()
 	p_spam = float()
+	n_ham = int()
+	n_spam = int()
+	n_postfix = int()
+	diff = float()
 
 
 	#计算先验概率
 	def computePriorProb(self, trainingSet):
 		total = len(trainingSet)
-		n_ham = 0
-		n_spam = 0
+		self.n_ham = 0
+		self.n_spam = 0
 		for i in trainingSet:
 			if fr.is_spam(i):
-				n_spam += 1
+				self.n_spam += 1
 			else:
-				n_ham += 1
-		self.p_ham = (n_ham + 1) / (total + 2)
-		self.p_spam = (n_spam + 1) / (total + 2)
+				self.n_ham += 1
+		self.p_ham = (self.n_ham + 1) / (total + 2)
+		self.p_spam = (self.n_spam + 1) / (total + 2)
 		self.p_ham = math.log(self.p_ham)
 		self.p_spam = math.log(self.p_spam)
-		return n_ham, n_spam
 
 
 	def initDicts(self):
@@ -42,10 +45,11 @@ class Model:
 			self.p_p_ham[postfix] = 0
 			self.p_p_spam[postfix] = 0
 		fp.close()
+		self.n_postfix = len(postfixes)
 
 
 	#计算后验概率
-	def computePostProb(self, trainingSet, n_ham, n_spam):
+	def computePostProb(self, trainingSet):
 		for k in range(len(trainingSet)):
 			i = trainingSet[k]
 			words = fr.getWords(i)
@@ -57,35 +61,37 @@ class Model:
 			sys.stdout.write("\rTraining progress: %d/%d" % (k + 1, len(trainingSet)))
 			sys.stdout.flush()
 		print('\nprocessing...')
+		self.diff = 0
 		for key in self.p_w_ham:
-			self.p_w_ham[key] += 1
-			self.p_w_ham[key] /= (n_ham + 2)
-			self.p_w_ham[key] = math.log(self.p_w_ham[key])
+			p_false = math.log((self.n_ham - self.p_w_ham[key] + 1) / (self.n_ham + 2))
+			self.diff -= p_false
+			self.p_w_ham[key] = math.log((self.p_w_ham[key] + 1) / (self.n_ham + 2)) - p_false
 		for key in self.p_w_spam:
-			self.p_w_spam[key] += 1
-			self.p_w_spam[key] /= (n_spam + 2)
-			self.p_w_spam[key] = math.log(self.p_w_spam[key])
+			p_false = math.log((self.n_spam - self.p_w_spam[key] + 1) / (self.n_spam + 2))
+			self.diff += p_false
+			self.p_w_spam[key] = math.log((self.p_w_spam[key] + 1) / (self.n_spam + 2)) - p_false
 		for key in self.p_p_ham:
 			self.p_p_ham[key] += 1
-			self.p_p_ham[key] /= (n_ham + 2)
+			self.p_p_ham[key] /= (self.n_ham + self.n_postfix)
 			self.p_p_ham[key] = math.log(self.p_p_ham[key])
 		for key in self.p_p_spam:
 			self.p_p_spam[key] += 1
-			self.p_p_spam[key] /= (n_spam + 2)
+			self.p_p_spam[key] /= (self.n_spam + self.n_postfix)
 			self.p_p_spam[key] = math.log(self.p_p_spam[key])
 
 
 	def train(self, trainingSet):
-		n_ham, n_spam = self.computePriorProb(trainingSet)
+		self.computePriorProb(trainingSet)
 		self.initDicts()
-		self.computePostProb(trainingSet, n_ham, n_spam)
+		self.computePostProb(trainingSet)
 
 
 	#从文件中还原model
-	def restore(self, p_ham, p_spam, p_w_ham, p_w_spam, p_p_ham, p_p_spam):
+	def restore(self, p_ham, p_spam, p_w_ham, p_w_spam, p_p_ham, p_p_spam, diff):
 		self.p_ham = p_ham
 		self.p_spam = p_spam
 		self.p_w_ham = p_w_ham
 		self.p_w_spam = p_w_spam
 		self.p_p_ham = p_p_ham
 		self.p_p_spam = p_p_spam
+		self.diff = diff

@@ -6,14 +6,13 @@ import math
 def classify(n, model, use_postfix, alpha):
 	words = fr.getWords(n)
 	postfix = fr.getPostfix(n)
-	spam = model.p_spam
-	ham = model.p_ham
+	diff = model.p_spam - model.p_ham + model.diff
 	for word in words:
-		spam += model.p_w_spam[word]
-		ham += model.p_w_ham[word]
+		diff += model.p_w_spam[word]
+		diff -= model.p_w_ham[word]
 	if use_postfix == True:
-		spam += model.p_p_spam[postfix]
-		ham += model.p_p_ham[postfix]
-	if spam - ham >= alpha:
+		#postfix = postfix if postfix in model.p_p_ham.keys() else None
+		diff += (model.p_p_spam[postfix] - model.p_p_ham[postfix])
+	if diff >= alpha:
 		return True
 	return False

@@ -25,6 +25,8 @@ def divideDataSet(pct):
 
 #训练模型
 def train(id, pct):
+	if pct <= 0 or pct > 100:
+		return None
 	divideDataSet(pct)
 	print('Training model %s.' % id)
 	model = Model()
@@ -36,6 +38,7 @@ def train(id, pct):
 	pickle.dump(model.p_w_spam, fp)
 	pickle.dump(model.p_p_ham, fp)
 	pickle.dump(model.p_p_spam, fp)
+	pickle.dump(model.diff, fp)
 	pickle.dump(testSet, fp)
 	fp.close()
 	print('Training finished. %d files learned. Model saved.\n\n' % len(trainingSet))
@@ -44,9 +47,14 @@ def train(id, pct):
 #测试模型
 def test(id, use_postfix, threshold):
 	fp = open('models\\' + id + '.mdl', 'rb')
+	if fp == None:
+		return
+	if threshold <= 0 or threshold > 1:
+		return
 	model = Model()
-	model.restore(pickle.load(fp), pickle.load(fp), pickle.load(fp), pickle.load(fp), pickle.load(fp), pickle.load(fp))
+	model.restore(pickle.load(fp), pickle.load(fp), pickle.load(fp), pickle.load(fp), pickle.load(fp), pickle.load(fp), pickle.load(fp))
 	testSet = pickle.load(fp)
+	fp.close()
 	correct = 0
 	incorrect = 0
 	alpha = math.log(threshold / (1 - threshold))
@@ -70,7 +78,7 @@ def multitrain():
 	percentage = [5, 20, 50, 80, 100]
 	for p in percentage:
 			id = 'model_%d' % (p)
-			for k in range(10):
+			for k in range(5):
 				train('%s_%d' % (id, k), p)
 
 #批量测试
@@ -85,7 +93,7 @@ def multitest():
 			acc[p][t][True] = dict()
 			acc[p][t][False] = dict()
 			id = 'model_%d' % (p)
-			for k in range(10):
+			for k in range(5):
 				acc[p][t][True][k] = test('%s_%d' % (id, k), True, t)
 				acc[p][t][False][k] = test('%s_%d' % (id, k), False, t)
 	for p in percentage:

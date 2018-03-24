@@ -1,6 +1,7 @@
 import filereader as fr
 import pickle
 
+#获取所有域名
 def collectPostfixes(n):
 	postfixes = set()
 	for i in range(n):
