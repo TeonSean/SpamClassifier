@@ -1,3 +1,5 @@
+import re
+
 count = 64620
 root_dir = '.\\data\\data_cut\\'
 labels = list()
@@ -18,6 +20,20 @@ def numberToStr3(n):
 
 def getFilenameByNumber(n):
 	return root_dir + numberToStr3(n // 300) + '\\' + numberToStr3(n % 300)
+
+def getPostfix(n):
+	if n >= count:
+		return None
+	fp = open(getFilenameByNumber(n), encoding='utf-8')
+	lines = fp.readlines()
+	for line in lines:
+		if not line[:4] == 'From':
+			continue
+		postfix = re.search(r'@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+', line)
+		if not postfix == None:
+			postfix = postfix.group()
+		return postfix
+	return None
 
 def filterCharacter(content):
 	re = ''

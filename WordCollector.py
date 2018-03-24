@@ -13,5 +13,6 @@ def collectWords(n):
 def collectAllWords():
 	fp = open('words.dat', 'wb')
 	pickle.dump(collectWords(fr.count), fp)
+	fp.close()
 
 collectAllWords()
