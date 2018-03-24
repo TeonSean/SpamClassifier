@@ -12,6 +12,7 @@ class Model:
 	p_spam = float()
 
 
+	#计算先验概率
 	def computePriorProb(self, trainingSet):
 		total = len(trainingSet)
 		n_ham = 0
@@ -43,6 +44,7 @@ class Model:
 		fp.close()
 
 
+	#计算后验概率
 	def computePostProb(self, trainingSet, n_ham, n_spam):
 		for k in range(len(trainingSet)):
 			i = trainingSet[k]
@@ -79,6 +81,7 @@ class Model:
 		self.computePostProb(trainingSet, n_ham, n_spam)
 
 
+	#从文件中还原model
 	def restore(self, p_ham, p_spam, p_w_ham, p_w_spam, p_p_ham, p_p_spam):
 		self.p_ham = p_ham
 		self.p_spam = p_spam

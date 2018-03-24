@@ -2,10 +2,8 @@ from trainmodel import Model
 import filereader as fr
 import math
 
-threshold = 0.5
-alpha = math.log(threshold / (1 - threshold))
-
-def classify(n, model, use_postfix):
+#判断第n封邮件是否垃圾邮件。 model-所选用的训练好的分类器。 use_postfix-是否使用发件人邮箱后缀信息。 alpha-阈值
+def classify(n, model, use_postfix, alpha):
 	words = fr.getWords(n)
 	postfix = fr.getPostfix(n)
 	spam = model.p_spam
